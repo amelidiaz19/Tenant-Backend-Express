@@ -1,0 +1,22 @@
+{
+  "name": "backexpress",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaulPPS632/Tenant-Backend-Express.git"
+  },
+  "keywords": [
+    "express"
+  ],
+  "author": "Paul Yeffert Perez Sanjinez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaulPPS632/Tenant-Backend-Express/issues"
+  },
+  "homepage": "https://github.com/PaulPPS632/Tenant-Backend-Express#readme",
+  "description": ""
+}
