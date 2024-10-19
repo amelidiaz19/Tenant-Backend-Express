@@ -24,7 +24,7 @@ class Pedidos extends Model {
         username: {
           type: DataTypes.STRING,
         },
-        tenandId: {
+        tenantId: {
           type: DataTypes.UUID,
         },
       }, // attributes

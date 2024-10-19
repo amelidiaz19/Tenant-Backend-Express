@@ -3,7 +3,7 @@ const Entidad = require("../../models/users/Entidad.js");
 const Rol = require("../../models/users/Rol.js");
 const Tenant = require("../../models/global/Tenant.js");
 const { Op } = require("sequelize");
-const ExecuteSql = require("../../services/ExecuteSQL.js");
+const ExecuteSql = require("../../services/ExecuteSQL");
 class EntidadController {
   async getAll(req, res) {
     const entidades = await Entidad.findAll({
@@ -124,9 +124,8 @@ class EntidadController {
       return res.status(500).json({ message: error.message });
     }
   }
-  async createNewTenant() {
+  async createNewTenant(req, res) {
     const { usuario, tenant } = req.body;
-
     const newTenant = await Tenant.create({
       name: tenant.nombre,
       tiponegocio: tenant.tiponegocio,
@@ -134,8 +133,10 @@ class EntidadController {
       clavesol: tenant.clavesol,
       paleta: tenant.paleta,
     });
-
-    await Entidad.create({
+    const ROL = await Rol.findOne({ where: { id: usuario.RolId } });
+    if (!ROL) return res.status(400).json({ message: "Rol no valido" });
+    console.log("TenantID: ", newTenant.id);
+    const newentidad = await Entidad.create({
       nombre: usuario.nombre,
       apellido: usuario.apellido,
       documento: usuario.documento,
@@ -144,12 +145,28 @@ class EntidadController {
       email: usuario.email,
       password: usuario.password,
       TipoEntidadId: 1,
-      RolId: 1,
+      RolId: ROL.id,
       tenantId: newTenant.id,
     });
-    await ExecuteSql.Execute(tenant.tiponegocio);
 
-    return res.status(200).json({ message: "registrado existosamente" });
+    //await ExecuteSql.Execute(tenant.tiponegocio);
+    await ExecuteSql.Execute(tenant.tiponegocio, newTenant.id);
+
+    const token = jwt.sign({ id: newentidad.id }, process.env.SECRET_KEY, {
+      expiresIn: 86400,
+    });
+
+    return res.status(200).json({
+      message: "registrado existosamente",
+      status: true,
+      token,
+      usuario: newentidad,
+      rol: ROL,
+    });
+  }
+  async executePrueba(req, res) {
+    return res.status(200).json(resultado);
+    //return res.send("hola");
   }
   async createSubcription(req, res) {
     try {
@@ -233,20 +250,29 @@ class EntidadController {
       if (!entidad) {
         return res.status(200).json({ error: "USUARIO NO ENCONTRADO" });
       }
-      return res
-        .status(200)
-        .json({ estado: true, rol: entidad.Rol.nombre, user: entidad });
+      console.log("RESPUESTA VALIDATE: ", {
+        estado: true,
+        rol: entidad.Rol.nombre,
+        user: entidad.dataValues,
+      });
+      return res.status(200).json({
+        estado: true,
+        rol: entidad.Rol.nombre,
+        usuario: entidad.dataValues,
+      });
     } catch (error) {
       return res.status(200).json({ error });
     }
   }
   async login(req, res) {
     const { email, password } = req.body;
+    console.log("body: ", req.body);
     try {
       const EntidadEncontrada = await Entidad.findOne({
         where: { email },
         include: { model: Rol, attributes: ["id", "nombre"] },
       });
+      console.log("entidad: ", EntidadEncontrada);
       if (!EntidadEncontrada) {
         return res.status(404).json({ message: "Entidad not found" });
       }
@@ -254,6 +280,7 @@ class EntidadController {
         password,
         EntidadEncontrada.password
       );
+      console.log("resultado: ", resultado);
       if (resultado) {
         const token = jwt.sign(
           { id: EntidadEncontrada.id },

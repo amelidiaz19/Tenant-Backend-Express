@@ -10,6 +10,8 @@ const Archivo = require("../../models/global/Archivo.js");
 class ProductoController {
   constructor() {}
   async getAll(req, res) {
+    const { tenantid } = req.headers;
+    console.log("tenantId: ", tenantid);
     const productos = await Producto.findAll({
       include: [
         {
@@ -32,20 +34,10 @@ class ProductoController {
             foreignKey: "MarcaId",
           },
         },
-        {
-          model: Archivo,
-          as: "ArchivoPrincipal", // alias para el campo en el resultado JSON
-          required: true,
-          foreignKey: "ArchivoPrincipalId",
-          attributes: ["url"],
-        },
-        {
-          model: Archivo, // Incluir archivos relacionados (muchos a muchos)
-          as: "ArchivosRelacionados",
-          through: { attributes: [] }, // Omitir los atributos intermedios de la tabla "producto_archivo"
-          attributes: ["url"], // Traer solo la url
-        },
       ],
+      where: {
+        tenantId: tenantid,
+      },
     });
     const resp = productos.map((producto) => ({
       id: producto.id,
@@ -62,12 +54,6 @@ class ProductoController {
       marca: producto.CategoriaMarca.Marca.nombre,
       garantia_cliente: producto.garantia_cliente,
       garantia_total: producto.garantia_total,
-      imagen_principal: producto.ArchivoPrincipal
-        ? producto.ArchivoPrincipal.url
-        : "",
-      imageurl: producto.ArchivosRelacionados
-        ? producto.ArchivosRelacionados.map((img) => img.url)
-        : [], // array de URLs
     }));
 
     return res.status(200).json(resp);

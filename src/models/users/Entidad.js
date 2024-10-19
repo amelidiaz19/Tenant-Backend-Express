@@ -37,7 +37,7 @@ class Entidad extends Model {
         verifiedWebsite: {
           type: DataTypes.BOOLEAN,
         },
-        tenandId: {
+        tenantId: {
           type: DataTypes.UUID,
         },
       },

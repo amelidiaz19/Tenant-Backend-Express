@@ -12,7 +12,7 @@ class EstadoProducto extends Model {
         nombre: {
           type: DataTypes.STRING,
         },
-        tenandId: {
+        tenantId: {
           type: DataTypes.UUID,
         },
       }, // attributes

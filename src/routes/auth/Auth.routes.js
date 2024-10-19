@@ -12,7 +12,8 @@ AuthRouter.post("/private", Authorization, EntidadController.create);
 AuthRouter.post("/validate", EntidadController.validate);
 AuthRouter.post(
   "/register-new-tenant",
-  ValidateHashCreateTenant,
+  //ValidateHashCreateTenant,
   EntidadController.createNewTenant
 );
+AuthRouter.get("/PRUEBA", EntidadController.executePrueba);
 module.exports = AuthRouter;

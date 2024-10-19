@@ -14,7 +14,7 @@ class ProductoSerie extends Model {
           allowNull: false,
           unique: true,
         },
-        tenandId: {
+        tenantId: {
           type: DataTypes.UUID,
         },
       }, // attributes

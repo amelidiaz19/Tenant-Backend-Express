@@ -2,7 +2,12 @@ const CategoriaMarca = require("../../models/inventory/CategoriaMarca.js");
 const Marca = require("../../models/inventory/Marca.js");
 class MarcaController {
   async GetAll(req, res) {
-    const resp = await Marca.findAll({ include: CategoriaMarca });
+    const { tenantid } = req.headers;
+    console.log("TENANTID: ", req.headers);
+    const resp = await Marca.findAll({
+      include: CategoriaMarca,
+      where: { tenantId: tenantid },
+    });
     return res.status(200).json(resp);
   }
   async GetAllPaged(req, res) {

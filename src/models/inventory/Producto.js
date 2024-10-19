@@ -30,7 +30,7 @@ class Producto extends Model {
         precio: {
           type: DataTypes.DOUBLE,
         },
-        tenandId: {
+        tenantId: {
           type: DataTypes.UUID,
         },
       }, // attributes
